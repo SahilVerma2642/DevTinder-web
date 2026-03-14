@@ -1,31 +1,26 @@
-import { createSlice } from "@reduxjs/toolkit";
-
-//create interface for the state
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { UserData } from "../features/user/userSlice"
 export interface UserState {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    emailId: string;
-    password: string;
-    photoUrl: string;
-    about: string;
-    skills: string[];
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
+    status: boolean;
+    data: UserData | null
 }
 
-const initialState: UserState | null = null;
+const initialState: UserState = {
+    status: false,
+    data: null
+}
 
 export const userSlice = createSlice({
     name: "User",
     initialState,
     reducers: {
-        addUser: (state, action) => {
-            return action.payload;
+        addUser: (state, action: PayloadAction<UserData>) => {
+            state.status = true;
+            state.data = action.payload;
         },
-        removeUser: (state, action) => {
-            return null;
+        removeUser: (state) => {
+            state.status = false;
+            state.data = null;
         }
     }
 });

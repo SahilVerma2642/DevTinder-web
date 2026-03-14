@@ -6,8 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../utils/constants';
 
 const Login = () => {
-    const [emailId, setemailId] = useState("");
-    const [password, setPassword] = useState("");
+    const [emailId, setEmailId] = useState<string | null>(null);
+    const [password, setPassword] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -18,18 +19,18 @@ const Login = () => {
                 password
             }, { withCredentials: true });
 
-            console.log('res is ', res);
-
             dispatch(addUser(res.data?.data));
             return navigate("/");
         } catch (err) {
-            console.error("Error: ", err);
+            if (axios.isAxiosError(err)) {
+                setError(err?.response?.data?.error || "Something went wrong.");
+            }
         }
     }
     return (
         <div className="card w-96 bg-base-300 shadow-sm mx-auto mt-10">
             <div className="card-body">
-                <div className="grid grid-cols-12">
+                <div className="grid grid-cols-12 gap-3">
                     <div className="col-span-12">
                         <label className="input validator">
                             <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -52,13 +53,11 @@ const Login = () => {
                                 // minlength="3"
                                 // maxlength="30"
                                 title="Only letters, numbers or dash"
-                                onChange={(e) => { setemailId(e.target.value) }}
-                                value={emailId}
+                                onChange={(e) => { setEmailId(e.target.value) }}
+                                value={emailId ?? ""}
                             />
                         </label>
                         <p className="validator-hint">
-                            Must be 3 to 30 characters
-                            <br />containing only letters, numbers or dash
                         </p>
                     </div>
                     <div className="col-span-12">
@@ -82,20 +81,17 @@ const Login = () => {
                                 required
                                 placeholder="Password"
                                 // minlength="8"
-                                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                                title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+                                // pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                // title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
                                 onChange={(e) => { setPassword(e.target.value) }}
-                                value={password}
+                                value={password ?? ""}
                             />
                         </label>
-                        <p className="validator-hint hidden">
-                            Must be more than 8 characters, including
-                            <br />At least one number <br />At least one lowercase letter <br />At least one uppercase letter
-                        </p>
+                        {error && (<p className="text-red-600 mt-3">{error}</p>)}
                     </div>
 
-                    <div className="col-span-12 mt-6">
-                        <button className="btn btn-primary btn-block" onClick={handleSubmit}>Subscribe</button>
+                    <div className="col-span-12 mt-3">
+                        <button className="btn btn-primary btn-block" onClick={handleSubmit}>Login</button>
                     </div>
                 </div>
             </div>
