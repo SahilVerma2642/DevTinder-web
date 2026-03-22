@@ -1,30 +1,6 @@
-import { useState, useEffect } from 'react';
-
 export default function ScrollFooter() {
-    const [showFooter, setShowFooter] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            // Get viewport height and scroll position
-            const innerHeight = window.innerHeight;
-            const scrollTop = document.documentElement.scrollTop;
-            // Get full document height
-            const offsetHeight = document.documentElement.offsetHeight;
-            // Check if scrolled to (or beyond) bottom (allowing small threshold)
-            const isBottom = (innerHeight + scrollTop) >= (offsetHeight - 2);
-            setShowFooter(isBottom);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        handleScroll();  // initial check in case content is short
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
     return (
-        <footer
-            className={`relative bottom-0 left-0 w-full bg-gray-800 text-white p-4 transition mt-auto
-                  ${showFooter ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-        >
+        <footer className="w-full mt-auto">
             <div className="footer sm:footer-horizontal bg-base-200 text-base-content p-6 md:p-10 shadow-lg">
                 <nav>
                     <h6 className="footer-title">Services</h6>

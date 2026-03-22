@@ -1,102 +1,165 @@
-import axios from 'axios';
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { addUser } from '../utils/userSlice';
-import { useNavigate } from 'react-router-dom';
-import { BASE_URL } from '../utils/constants';
+import axios from "axios";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addUser } from "../features/user/userSlice";
+import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/constants";
+import {
+  isValidEmail,
+  isValidPassword,
+  isValidName,
+} from "../utils/validators";
 
 const Login = () => {
-    const [emailId, setEmailId] = useState<string | null>(null);
-    const [password, setPassword] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [emailId, setEmailId] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [isLoginForm, setIsLoginForm] = useState<boolean>(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const handleSubmit = async () => {
-        try {
-            const res = await axios.post(BASE_URL + "/login", {
-                emailId,
-                password
-            }, { withCredentials: true });
-
-            dispatch(addUser(res.data?.data));
-            return navigate("/");
-        } catch (err) {
-            if (axios.isAxiosError(err)) {
-                setError(err?.response?.data?.error || "Something went wrong.");
-            }
-        }
+  const validate = (): string | null => {
+    if (!isLoginForm) {
+      if (!isValidName(firstName)) {
+        return "Enter a valid first  name.";
+      }
+      if (!isValidName(lastName)) {
+        return "Enter a valid last name.";
+      }
     }
-    return (
-        <div className="card w-96 bg-base-300 shadow-sm mx-auto mt-10">
-            <div className="card-body">
-                <div className="grid grid-cols-12 gap-3">
-                    <div className="col-span-12">
-                        <label className="input validator">
-                            <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <g
-                                    strokeLinejoin="round"
-                                    strokeLinecap="round"
-                                    strokeWidth="2.5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                >
-                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </g>
-                            </svg>
-                            <input
-                                type="text"
-                                required
-                                placeholder="email"
-                                // pattern="[A-Za-z][A-Za-z0-9\-]*"
-                                // minlength="3"
-                                // maxlength="30"
-                                title="Only letters, numbers or dash"
-                                onChange={(e) => { setEmailId(e.target.value) }}
-                                value={emailId ?? ""}
-                            />
-                        </label>
-                        <p className="validator-hint">
-                        </p>
-                    </div>
-                    <div className="col-span-12">
-                        <label className="input validator">
-                            <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <g
-                                    strokeLinejoin="round"
-                                    strokeLinecap="round"
-                                    strokeWidth="2.5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"
-                                    ></path>
-                                    <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
-                                </g>
-                            </svg>
-                            <input
-                                type="password"
-                                required
-                                placeholder="Password"
-                                // minlength="8"
-                                // pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                                // title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
-                                onChange={(e) => { setPassword(e.target.value) }}
-                                value={password ?? ""}
-                            />
-                        </label>
-                        {error && (<p className="text-red-600 mt-3">{error}</p>)}
-                    </div>
+    if (!isValidEmail(emailId)) {
+      return "Enter a valid email address.";
+    }
+    const passwordValidation = isValidPassword(password);
+    if (!passwordValidation.valid) {
+      return passwordValidation.message;
+    }
+    return null;
+  };
 
-                    <div className="col-span-12 mt-3">
-                        <button className="btn btn-primary btn-block" onClick={handleSubmit}>Login</button>
-                    </div>
-                </div>
+  const handleSubmit = async () => {
+    const ValidationError = validate();
+    if (ValidationError) {
+      return setError(ValidationError);
+    }
+    const apiUrl = isLoginForm ? "/login" : "/signup";
+    const requestBody = isLoginForm
+      ? {
+          emailId,
+          password,
+        }
+      : {
+          firstName,
+          lastName,
+          emailId,
+          password,
+        };
+
+    try {
+      const res = await axios.post(BASE_URL + apiUrl, requestBody, {
+        withCredentials: true,
+      });
+
+      dispatch(addUser(res.data?.data));
+      return navigate("/");
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(err?.response?.data?.error || "Something went wrong.");
+      }
+    }
+  };
+  return (
+    <div className="card w-96 bg-base-300 shadow-sm mx-auto mt-10">
+      <div className="card-body">
+        <div className="grid grid-cols-12 gap-3">
+          {!isLoginForm && (
+            <div className="col-span-12">
+              <label className="input validator">
+                <input
+                  type="text"
+                  required
+                  placeholder="First Name"
+                  onChange={(e) => setFirstName(e.target.value)}
+                  value={firstName}
+                />
+              </label>
+              <p className="validator-hint"></p>
             </div>
-        </div>
-    )
-}
+          )}
+          {!isLoginForm && (
+            <div className="col-span-12">
+              <label className="input validator">
+                <input
+                  type="text"
+                  required
+                  placeholder="Last Name"
+                  onChange={(e) => setLastName(e.target.value)}
+                  value={lastName}
+                />
+              </label>
+              <p className="validator-hint"></p>
+            </div>
+          )}
+          <div className="col-span-12">
+            <label className="input validator">
+              <input
+                type="email"
+                required
+                placeholder="email"
+                onChange={(e) => {
+                  setEmailId(e.target.value);
+                }}
+                value={emailId}
+              />
+            </label>
+            <p className="validator-hint"></p>
+          </div>
+          <div className="col-span-12">
+            <label className="input validator">
+              <input
+                type="password"
+                required
+                placeholder="Password"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+                value={password}
+              />
+            </label>
+            {error && <p className="text-red-600 mt-3">{error}</p>}
+          </div>
 
-export default Login
+          <div className="col-span-12 mt-3">
+            <button
+              className="btn btn-primary btn-block"
+              onClick={handleSubmit}
+            >
+              {isLoginForm ? "Login" : "Signup"}
+            </button>
+          </div>
+          <div className="col-span-12 mt-3">
+            {isLoginForm ? (
+              <button
+                className="cursor-pointer text-blue-700"
+                onClick={() => {setIsLoginForm(false); setError("");}}
+              >
+                New user? Signup here
+              </button>
+            ) : (
+              <button
+                className="cursor-pointer text-blue-700"
+                onClick={() => {setIsLoginForm(true); setError("");}}
+              >
+                Already have an account ? Login here
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
