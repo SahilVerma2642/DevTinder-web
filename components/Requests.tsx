@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../utils/appStore";
+import type { RootState } from "../utils/appStore";
 import { BASE_URL } from "../utils/constants";
 import axios from "axios";
 import { addRequest } from "../features/requests/requestSlice";

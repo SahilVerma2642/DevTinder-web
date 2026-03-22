@@ -1,4 +1,4 @@
-import { UserData } from "../user/user.types";
+import type { UserData } from "../user/user.types";
 
 export interface RequestData {
     _id: string;

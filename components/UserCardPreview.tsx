@@ -1,5 +1,4 @@
-import React from 'react';
-import { UserData } from '../features/user/user.types';
+import type { UserData } from '../features/user/user.types';
 
 interface UserCardPreviewProps {
     user: Partial<UserData>;

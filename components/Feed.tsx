@@ -3,9 +3,9 @@ import { useCallback, useEffect } from 'react'
 import { BASE_URL } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux';
 import { addFeed, removeFeed } from '../features/feed/feedSlice';
-import { RootState } from '../utils/appStore';
+import type { RootState } from '../utils/appStore';
 import UserCard from './UserCard';
-import { UserData } from '../features/user/user.types';
+import type { UserData } from '../features/user/user.types';
 
 const Feed = () => {
     const feed = useSelector((store: RootState) => store.feed);

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useId } from 'react'
-import { UserData } from '../features/user/user.types'
+import type { UserData } from '../features/user/user.types'
 
 interface UserCardProps {
     user: UserData;

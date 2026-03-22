@@ -1,11 +1,11 @@
 import {createSlice} from "@reduxjs/toolkit";
-import { RequestData } from "./request.types";
+import type { RequestData } from "./request.types";
 
 const requestSlice = createSlice({
     name: "Requests",
     initialState: [] as RequestData[],
     reducers: {
-        addRequest : (state, action) => action.payload,
+        addRequest : (_, action) => action.payload,
         clearRequest : (state, action) => {
             return state.filter(request => request._id !== action.payload._id);
         }

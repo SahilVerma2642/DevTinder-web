@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { UserData } from "../features/user/user.types";
+import type { UserData } from "../features/user/user.types";
 import UserCardPreview from "./UserCardPreview";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
