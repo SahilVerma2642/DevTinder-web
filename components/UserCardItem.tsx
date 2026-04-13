@@ -2,6 +2,7 @@ import { BASE_URL } from "../utils/constants";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { clearRequest } from "../features/requests/requestSlice";
+import { Link } from "react-router-dom";
 
 const UserCardItem = ({ ...props }) => {
   console.log("UserCardItem props:", props);
@@ -10,7 +11,8 @@ const UserCardItem = ({ ...props }) => {
   if (!props.user) {
     return null;
   }
-  const { firstName, lastName, age, gender, photoUrl, about } = props.user;
+
+  const { _id: userId, firstName, lastName, age, gender, photoUrl, about } = props.user;
   const requestId = props._id;
 
   const reviewRequest = async (status: "accepted" | "rejected", _id: string) => {
@@ -49,12 +51,15 @@ const UserCardItem = ({ ...props }) => {
             )}
             <p className="text-sm line-clamp-2">{about}</p>
             <div className="card-actions justify-end relative z-10 flex-wrap gap-2">
-              {requestId && (
+              {requestId ? (
                 <>
                   <button className="btn btn-outline btn-accent btn-sm" onClick={() => reviewRequest('accepted', requestId)}>Accept</button>
                   <button className="btn btn-outline btn-error btn-sm" onClick={() => reviewRequest('rejected', requestId)}>Reject</button>
                 </>
-              )}
+              ) : (
+                <Link to={`/chat/${userId}`}><button className="btn btn-outline btn-accent btn-sm" >Message</button></Link>
+              )
+              }
             </div>
           </div>
         </div>
